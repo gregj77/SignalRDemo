@@ -54,7 +54,7 @@
             $scope.currentRoom = roomName;
             $scope.isInRoom = true;
             token = chatService.enterRoom(roomName).subscribeOnNext(function(msg) {
-                $scope.messages.push(msg);
+                $scope.messages.unshift(msg);
                 if (!$scope.$$phase) {
                     $scope.$apply();
                 }

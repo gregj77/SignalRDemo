@@ -41,11 +41,11 @@
                 <p><strong>Current room: {{currentRoom}}</strong></p>
                 <a href="" ng-click="onLeaveRoom()">Leave room</a>
                 <br />
-                <select multiple="" size="15" style="width: 300px;">
+                <select multiple="" size="15" style="width: 303px;">
                     <option ng-repeat="msg in messages">[{{msg.Sender}}]: {{msg.Message}}</option>
                 </select>
                 <br />
-                <input ng-model="inputMessage" ng-keypress="onKeyPress($event)" style="width: 250px;" /><button ng-click="onSendMessage()" ng-disabled="!inputMessage">Send</button>
+                <input ng-model="inputMessage" ng-keypress="onKeyPress($event)" style="width: 245px;" /><button ng-click="onSendMessage()" ng-disabled="!inputMessage">Send</button>
             </div>
 
         </div>
