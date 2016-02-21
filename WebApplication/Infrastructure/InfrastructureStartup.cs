@@ -58,9 +58,9 @@ namespace WebApplication.Infrastructure
             GlobalHost.DependencyResolver.Register(typeof(JsonSerializer), () => JsonSerializer.Create(settings));
             GlobalHost.HubPipeline.RequireAuthentication();
             GlobalHost.Configuration.DefaultMessageBufferSize = 10;
-            GlobalHost.Configuration.ConnectionTimeout = TimeSpan.FromSeconds(20);
             GlobalHost.Configuration.DisconnectTimeout = TimeSpan.FromSeconds(21);
             GlobalHost.Configuration.KeepAlive = TimeSpan.FromSeconds(7);
+            GlobalHost.Configuration.ConnectionTimeout = TimeSpan.FromSeconds(20);
 
             builder.MapSignalR();
 

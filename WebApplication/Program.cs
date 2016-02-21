@@ -8,7 +8,7 @@ namespace WebApplication
     {
         static void Main(string[] args)
         {
-            string url = "http://localhost:8089";
+            string url = "http://*:8089";
 
             using (WebApp.Start<InfrastructureStartup>(url))
             {
