@@ -12,51 +12,17 @@ namespace WebApplication.Infrastructure
     [HubName("ChatService")]
     public class ChatServiceHub : Hub
     {
-        public IEnumerable<ChatUser> GetUsers()
-        {
-            return UsersRepository.GetUsers();
-        }
+        // 2a Get Users from the UsersRepository.GetUsers();
 
-        public IEnumerable<ChatRoomDetails> GetChatRooms()
-        {
-            return ChatRoomManager.Instance.GetRooms();
-        }
 
-        public async void EnterRoom(string roomName)
-        {
-            await Groups.Add(Context.ConnectionId, roomName);
-            var stream = ChatRoomManager.Instance.GetPublishedMessages(roomName);
-            stream.Subscribe(msg => Clients.Caller.OnNewChatMessage(msg));
-        }
+        // 4a Get rooms from manager ChatRoomManager.Instance.GetRooms();
 
-        public async void LeaveRoom(string roomName)
-        {
-            await Groups.Remove(Context.ConnectionId, roomName);
-        }
+        // 5a enter and exit room, send old messages var stream = ChatRoomManager.Instance.GetPublishedMessages(roomName);
 
-        public async void SendMessage(ChatMessage message)
-        {
-            message = ChatRoomManager.Instance.OnNewMessage(message, Context.User.Identity.Name);
-            await Clients.Group(message.Room).OnNewChatMessage(message);
-        }
+        // 7a implement sending messages message = ChatRoomManager.Instance.OnNewMessage(message, Context.User.Identity.Name);
 
-        public async override Task OnConnected()
-        {
-            var user = UsersRepository.UserLoggedIn(Context.User.Identity.Name);
-            await Clients.AllExcept(Context.ConnectionId).NotifyUserConnected(user.Name);
-            await base.OnConnected();
-        }
-
-        public async override Task OnDisconnected(bool stopCalled)
-        {
-            var user = UsersRepository.UserLoggedOff(Context.User.Identity.Name);
-            await Clients.AllExcept(Context.ConnectionId).NotifyUserDisconnected(user.Name);
-            await base.OnDisconnected(stopCalled);
-        }
-
-        public override Task OnReconnected()
-        {
-            return base.OnReconnected();
-        }
+        // 3a) log in / log off user, notify clients
+        // var user = UsersRepository.UserLoggedIn(Context.User.Identity.Name);
+        // var user = UsersRepository.UserLoggedOff(Context.User.Identity.Name);
     }
 }

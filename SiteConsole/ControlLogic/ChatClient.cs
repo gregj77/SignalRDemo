@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Configuration;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Chat.Client.Model;
@@ -22,62 +22,44 @@ namespace Chat.Client.ControlLogic
         {
             string url = ConfigurationManager.AppSettings["ServiceBaseUrl"];
             _hubConnection = new HubConnection(url);
-            _hubConnection.Headers.Add("Authorization", "Basic " + Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(user + ":")));
-            _proxy = _hubConnection.CreateHubProxy("ChatService");
+            // 1. Setup authorization and create hub
 
-            UserConnectionStatus = Observable
-                .Create<UserConnectionNotification>(o =>
-                {
-                    var resources = new CompositeDisposable();
-                    resources.Add(_proxy.On("NotifyUserConnected", (string userName) =>
-                    {
-                        o.OnNext(new UserConnectionNotification {UserName = userName, IsConnected = true});
-                    }));
-                    resources.Add(_proxy.On("NotifyUserDisconnected", (string userName) =>
-                    {
-                        o.OnNext(new UserConnectionNotification {UserName = userName, IsConnected = false});
-                    }));
-                    return resources;
-                })
-                .Publish()
-                .RefCount();
+            //("Authorization", "Basic " + Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(user + ":")));
+            //url: "ChatService");
 
-            _messageStream = Observable
-                .Create<ChatMessage>(o =>
-                {
-                    return _proxy.On("OnNewChatMessage", (ChatMessage message) => o.OnNext(message));
-                })
-                .Publish()
-                .RefCount();
 
-            _hubConnection.Start().Wait();
+            // 3. implement connection status stream
+            UserConnectionStatus = Observable.Empty<UserConnectionNotification>();
+
+            // 6. implement receiving messages
+            _messageStream = Observable.Never<ChatMessage>();
+
         }
 
         public IObservable<UserConnectionNotification> UserConnectionStatus { get; private set; }
 
         public async Task<IEnumerable<ChatUser>> GetUsers()
         {
-            return await _proxy.Invoke<IEnumerable<ChatUser>>("GetUsers");
+            // 2. get users from the proxy
+            return new ChatUser[] {new ChatUser() {IsOnline = false, Name = "Kowalski"}};
         }
 
         public async Task<IEnumerable<ChatRoomDetails>> GetChatRooms()
         {
-            return await _proxy.Invoke<IEnumerable<ChatRoomDetails>>("GetChatRooms");
+            // 4. fetch chat rooms
+            return new ChatRoomDetails[] {new ChatRoomDetails {Created = DateTime.Now, Description = "", RoomName = "Madagaskar"}};
         }
 
         public async Task SendMessage(ChatMessage message)
         {
-            await _proxy.Invoke<ChatMessage>("SendMessage", message);
+            // 7. implement sending messages
+            return;
         }
 
         public IObservable<ChatMessage> EnterRoom(string room)
         {
-            return Observable.Create<ChatMessage>(async o =>
-            {
-                var result = _messageStream.Where(p => string.Equals(p.Room, room)).Subscribe(o);
-                await _proxy.Invoke<string>("EnterRoom", room);
-                return result;
-            });
+            // 5. implement entering and leaving room
+            return Observable.Never<ChatMessage>();
         }
 
         public void Dispose()
