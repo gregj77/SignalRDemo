@@ -37,11 +37,7 @@ namespace WebApplication.Infrastructure
         public async void SendMessage(ChatMessage message)
         {
             message = ChatRoomManager.Instance.OnNewMessage(message, Context.User.Identity.Name);
-            var watch = new Stopwatch();
-            watch.Start();
             await Clients.Group(message.Room).OnNewChatMessage(message);
-            watch.Stop();
-            Console.WriteLine("Time: {0}", watch.ElapsedMilliseconds);
         }
 
         public async override Task OnConnected()
