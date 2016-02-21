@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" ng-app="chatClient">
+<head>
+    <meta charset="utf-8" />
+    <title>Chat client</title>
+    <script src="scripts/jquery-1.6.4.min.js"></script>
+    <script src="scripts/jquery.signalr-2.2.0.min.js"></script>
+    <script src="scripts/angular-1.5.0.min.js"></script>
+    <script src="scripts/signalr-hub.min.js"></script>
+    <script src="scripts/rx.lite.min.js"></script>
+    <script src="chatclient.js"></script>
+</head>
+<body>
+<div ng-controller="chatController">
+    <h1>Welecome to SignalR with Angular chat demo</h1>
+    <p>Current service status: {{serviceState}}</p>
+
+    <div ng-hide="!isConnected">
+        <div style="float: left; margin: 15px;">
+            <p><strong>User list</strong>
+            </p>
+            <div ng-controller="userController">
+                <select multiple='' size="8">
+                    <option ng-repeat="user in users">User {{user.Name}} is {{user.IsOnline ? 'online' : 'offline'}}</option>
+                </select>
+            </div>
+        </div>
+        <div ng-controller="chatRoomController">
+            <div style="float: left; margin: 15px;">
+                <p>
+                    <strong>Chat rooms</strong>
+                </p>
+                <div>
+                    <li ng-repeat="room in rooms" ng-hide="room.RoomName === currentRoom">
+                        <a href="" ng-click="onEnterRoom(room.RoomName)">{{room.RoomName}} (created on: {{room.Description}})</a>
+                    </li>
+                </div>
+            </div>
+            <div ng-hide="!isInRoom" style="float: left; margin: 15px;">
+                <p><strong>Current room: {{currentRoom}}</strong></p>
+                <a href="" ng-click="onLeaveRoom()">Leave room</a>
+                <br />
+                <select multiple="" size="15" style="width: 300px;">
+                    <option ng-repeat="msg in messages">[{{msg.Sender}}]: {{msg.Message}}</option>
+                </select>
+                <br />
+                <input ng-model="inputMessage" ng-keypress="onKeyPress($event)" style="width: 250px;" /><button ng-click="onSendMessage()" ng-disabled="!inputMessage">Send</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>
