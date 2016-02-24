@@ -116,20 +116,8 @@
 
         var hub = new Hub('ChatService', {
             listeners: {
-                NotifyUserConnected : function(userName) {
-                    $log.info('User ' + userName + ' is online now');
-                    userNotificationStream.onNext({ name: userName, isOnline: true });
-                },
-                NotifyUserDisconnected: function (userName) {
-                    $log.info('User ' + userName + ' is offline now');
-                    userNotificationStream.onNext({ name: userName, isOnline: false });
-                },
-                OnNewChatMessage: function(msg) {
-                    $log.info('new chat message from ' + msg.Sender);
-                    messageStream.onNext(msg);
-                }
             },
-            methods: ['GetUsers', 'GetChatRooms', 'EnterRoom', 'LeaveRoom', 'SendMessage'],
+            methods: [],
             errorHandler: function(error) {
                 $log.error(error);
             },
@@ -156,35 +144,19 @@
         });
 
         var getUsers = function() {
-            return Rx.Observable.fromPromise(hub.GetUsers());
+            return Rx.Observable.return([]);
         };
 
         var getRooms = function() {
-            return Rx.Observable.fromPromise(hub.GetChatRooms());
+            return Rx.Observable.return([]);
         }
         
         var sendMessage = function(msg) {
-            hub.SendMessage(msg);
+            $log.debug(JSON.stringify(msg));
         }
 
         var enterRoom = function (roomName) {
-            return Rx.Observable.create(function(observer) {
-                $log.debug('Entering room ' + roomName);
-                var token = messageStream
-                    .where(function(msg) {
-                        return msg.Room === roomName;
-                    })
-                    .subscribeOnNext(function(msg) {
-                        observer.onNext(msg);
-                    });
-
-                hub.EnterRoom(roomName);
-                return function() {
-                    $log.debug('Leaving room ' + roomName);
-                    hub.LeaveRoom(roomName);
-                    token.dispose();
-                };
-            });
+            return Rx.Observable.return({});
         }
 
         $log.debug('chatService client initialized');
